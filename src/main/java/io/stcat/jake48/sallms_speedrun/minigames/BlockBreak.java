@@ -1,7 +1,7 @@
-package io.stcat.jake48.sallms_Speedrun.minigames;
+package io.stcat.jake48.sallms_speedrun.minigames;
 
-import io.stcat.jake48.sallms_Speedrun.GameManager;
-import io.stcat.jake48.sallms_Speedrun.GameState;
+import io.stcat.jake48.sallms_speedrun.GameManager;
+import io.stcat.jake48.sallms_speedrun.GameState;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -182,7 +182,7 @@ public class BlockBreak implements MiniGame {
 
         // 6. 모든 블록을 다 캤는지 (게임을 클리어) 확인
         if (isComplete()) {
-            player.sendMessage(Component.text("1단계 클리어!", NamedTextColor.GREEN));
+            player.sendMessage(Component.text("1단계 클리어!", NamedTextColor.GOLD));
 
             // advanceToNextStage를 다음 틱에 실행되도록 예약
             new BukkitRunnable() {

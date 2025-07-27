@@ -1,9 +1,8 @@
-package io.stcat.jake48.sallms_Speedrun;
+package io.stcat.jake48.sallms_speedrun;
 
-import io.stcat.jake48.sallms_Speedrun.commands.CmdTabCompleter;
-import io.stcat.jake48.sallms_Speedrun.commands.GameCommand;
-import io.stcat.jake48.sallms_Speedrun.listeners.GameListener;
-import io.stcat.jake48.sallms_Speedrun.minigames.MiniGameListener;
+import io.stcat.jake48.sallms_speedrun.commands.GameCommand;
+import io.stcat.jake48.sallms_speedrun.listeners.GameListener;
+import io.stcat.jake48.sallms_speedrun.listeners.MiniGameListener;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -36,7 +35,6 @@ public final class Sallms_Speedrun extends JavaPlugin {
 
         // 명령어 등록
         getCommand("sallms").setExecutor(new GameCommand(this));
-        getCommand("sallms").setTabCompleter(new CmdTabCompleter());
 
         // 리스너 등록
         getServer().getPluginManager().registerEvents(new GameListener(), this);

@@ -1,6 +1,6 @@
 name: Sallms_Speedrun
 version: '${version}'
-main: io.stcat.jake48.sallms_Speedrun.Sallms_Speedrun
+main: io.stcat.jake48.sallms_speedrun.Sallms_Speedrun
 api-version: '1.21'
 depend: [Multiverse-Core]
 commands:

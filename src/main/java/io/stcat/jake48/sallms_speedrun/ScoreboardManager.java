@@ -1,4 +1,4 @@
-package io.stcat.jake48.sallms_Speedrun;
+package io.stcat.jake48.sallms_speedrun;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

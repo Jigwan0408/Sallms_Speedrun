@@ -1,7 +1,7 @@
-package io.stcat.jake48.sallms_Speedrun.listeners;
+package io.stcat.jake48.sallms_speedrun.listeners;
 
-import io.stcat.jake48.sallms_Speedrun.GameManager;
-import io.stcat.jake48.sallms_Speedrun.GameState;
+import io.stcat.jake48.sallms_speedrun.GameManager;
+import io.stcat.jake48.sallms_speedrun.GameState;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.event.EventHandler;
