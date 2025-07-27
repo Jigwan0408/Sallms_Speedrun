@@ -19,7 +19,7 @@ public class FarmingGame implements MiniGame {
     private static final int DEFAULT_TICK_SPEED = 3;
 
     public FarmingGame(JavaPlugin plugin) {
-        // 생성 시점에 서버의 기본 randomTickSpeed 값을 미리 저장
+        // 생성 시점에 서버의 기본 randomTickSpeed 값을 미리 저장 test
         this.originalTickSpeed = Bukkit.getServer().getWorlds().get(0).getGameRuleValue(GameRule.RANDOM_TICK_SPEED);
     }
 
