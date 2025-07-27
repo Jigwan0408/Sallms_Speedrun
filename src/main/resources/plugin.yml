@@ -1,0 +1,10 @@
+name: Sallms_Speedrun
+version: '${version}'
+main: io.stcat.jake48.sallms_Speedrun.Sallms_Speedrun
+api-version: '1.21'
+depend: [Multiverse-Core]
+commands:
+  sallms:
+    description: 게임을 관리하는 명령어
+    usage: /sallms <start|stop>
+    permission: sall.admin

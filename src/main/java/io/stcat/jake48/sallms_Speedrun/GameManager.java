@@ -1,0 +1,216 @@
+package io.stcat.jake48.sallms_Speedrun;
+
+import io.stcat.jake48.sallms_Speedrun.minigames.BlockBreak;
+import io.stcat.jake48.sallms_Speedrun.minigames.MiniGame;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.*;
+
+public class GameManager {
+
+    private static final GameManager instance = new GameManager();
+    private final Set<UUID> players = new HashSet<>(); // Player UUID 저장
+    private final Map<Integer, MiniGame> gameStages = new HashMap<>(); // 미니게임 단계 목록
+    private JavaPlugin plugin; // 플러그인 객체 필드
+    private GameState gameState = GameState.WAITING;
+    private GameTimer gameTimer; // 타이머 객체 필드
+    private UUID selectedPlayerUUID; // 선택된 플레이어 UUID 객체 필드
+    private MiniGame activeMiniGame; // 현재 활성화된 미니게임 객체 필드
+    private int currentStage = 0; // 현재 단계를 추적하는 변수
+
+    // 싱글톤 패턴
+    private GameManager() {
+    }
+
+    public static GameManager getInstance() {
+        return instance;
+    }
+
+    public void init(JavaPlugin plugin) {
+        this.plugin = plugin;
+        registerStages();
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public Set<UUID> getPlayers() {
+        return players;
+    }
+
+    public void addPlayer(@NotNull Player player) {
+        players.add(player.getUniqueId());
+    }
+
+    public void removePlayer(@NotNull Player player) {
+        players.remove(player.getUniqueId());
+    }
+
+    public UUID getSelectedPlayerUUID() {
+        return this.selectedPlayerUUID;
+    }
+
+    public MiniGame getActiveMiniGame() {
+        return this.activeMiniGame;
+    }
+
+    // 게임 시작
+    public void startGame() {
+        // 1. 게임 시작 가능 상태인지 확인
+        if (gameState != GameState.WAITING) {
+            return;
+        }
+        if (players.isEmpty()) {
+            Bukkit.broadcast(Component.text("참가자가 없어 게임을 시작할 수 없습니다.",  NamedTextColor.RED));
+            return;
+        }
+
+        // 2. 랜덤 플레이어 선택
+        List<UUID> playerList = new ArrayList<>(players);
+        Random random = new Random();
+        int randomIndex = random.nextInt(playerList.size());
+        selectedPlayerUUID = playerList.get(randomIndex);
+        Player selectedPlayer = Bukkit.getPlayer(selectedPlayerUUID);
+
+        // 3. 선택된 플레이어가 유효한지 확인
+        if (selectedPlayer == null) {
+            Bukkit.broadcast(Component.text("선택된 플레이어가 오프라인 상태라 게임을 시작할 수 없습니다.", NamedTextColor.RED));
+            return;
+        }
+
+        // 4. 검증이 끝나면 게임 상태 변경
+        this.gameState = GameState.RUNNING;
+
+        // 5. 플레이어를 서바이벌 모드로 변경
+        selectedPlayer.setGameMode(GameMode.SURVIVAL);
+
+        // 6. 스코어보드 정리 및 메시지 전송
+        for (UUID playerUUID : players) {
+            Player player = Bukkit.getPlayer(playerUUID);
+            if (player != null) {
+                ScoreboardManager.clearScoreboard(player);
+            }
+        }
+        Bukkit.broadcast(Component.text("게임을 시작합니다! 선택된 플레이어: " + selectedPlayer.getName(), NamedTextColor.GREEN));
+
+        // 7. 선택된 플레이어를 1단계로 이동 (moveToStage의 성공 여부 확인)
+        boolean setupSuccess = moveToStage(selectedPlayer, 1);
+
+        // 8. 만약 setup이 실패했다면, startGame 메서드 종료
+        if (!setupSuccess) {
+            return;
+        }
+
+        // 9. 타이머 시작
+        gameTimer = new GameTimer();
+        gameTimer.runTaskTimer(plugin, 0L, 1L);
+    }
+
+    // 미니게임 등록 메서드
+    private void registerStages() {
+        // 1 스테이지 (블록 캐기)
+        gameStages.put(1, new BlockBreak(this.plugin));
+
+        // 2 스테이지 (농사 게임)
+//         gameStages.put(2, new FarmingGame(this.plugin));
+    }
+
+    // 다음 단계로 넘어가는 메서드
+    public void advanceToNextStage(Player player) {
+        // TODO: 마지막 단계인지 확인하는 로직
+
+        moveToStage(player, this.currentStage + 1);
+    }
+
+    // 특정 단계로 텔레포트 하는 메서드
+    private boolean moveToStage(Player player, int stageNum) {
+        // 다음 단께로 가기 전, 현재 진행 중인 미니게임이 있다면 정리
+        if (activeMiniGame != null) {
+            activeMiniGame.cleanup();
+        }
+
+        Sallms_Speedrun mainPlugin = (Sallms_Speedrun) plugin;
+        Location stageLoc = mainPlugin.getStageLocation(stageNum);
+
+        if (stageLoc == null) {
+            player.sendMessage(Component.text(stageNum + "단계의 위치를 찾을 수 없습니다! 관리자에게 문의하세요.", NamedTextColor.RED));
+            stopGame();
+            return false;
+        }
+
+        this.currentStage = stageNum;
+        player.sendMessage(Component.text(stageNum + "단계로 이동합니다!", NamedTextColor.GREEN));
+        player.teleport(stageLoc);
+
+        // 다음 단계의 MiniGame 객체 가져옴
+        this.activeMiniGame = gameStages.get(stageNum);
+        
+        // 해당 객체가 존재하면 setup 메서드 호출
+        if (activeMiniGame != null) {
+            boolean success = activeMiniGame.setup(player, stageLoc);
+            if (!success) {
+                return false; // setup이 실패하면, 이 메서드도 '실패' 반환
+            }
+        }
+        return true; // 성공
+    }
+
+    // 게임 종료
+    public void stopGame() {
+        // 게임이 이미 대기 상태면 아무것도 하지 않음
+        if (gameState != GameState.RUNNING) {
+            return;
+        }
+
+        // 게임 상태를 대기 중으로 변경
+        this.gameState = GameState.WAITING;
+
+        // 현재 진행 중인 미니게임 정리 메서드 호출
+        if (activeMiniGame != null) {
+            activeMiniGame.cleanup(); // 미니게임 복원
+            activeMiniGame = null;    // 다음 게임을 위해 미니게임 객체 초기화
+        }
+
+        // 타이머 중지 및 최종 기록 계산
+        String finalTime = "기록 없음";
+        if (gameTimer != null) {
+            gameTimer.cancel();
+            finalTime = gameTimer.getFinalTime();
+        }
+
+        // 결과 메시지 및 스코어보드 표시
+        Component message = Component.text("게임이 종료되었습니다. 최종 기록: " + finalTime, NamedTextColor.WHITE);
+        Bukkit.broadcast(message);
+
+        Sallms_Speedrun mainPlugin = (Sallms_Speedrun) this.plugin;
+        Location spawnLoc = mainPlugin.getStageLocation(0); // 0번 스테이지(스폰)
+
+        // 스폰 지점(0단계)로 모든 플레이어 텔레포트
+        if (spawnLoc != null) {
+            for (UUID playerUUID : players) {
+                Player player = Bukkit.getPlayer(playerUUID);
+                if (player != null) {
+                    ScoreboardManager.displayFinalScore(player, finalTime);
+                    player.teleport(spawnLoc); // 스폰 위치로 텔레포트
+                }
+            }
+        } else {
+            // 스폰 위치를 못 찾았을 때
+            this.plugin.getLogger().severe("Failed to return the player because the spawn location (Stage 0) could not be found.");
+        }
+
+        // 선택되었던 플레이어 정보 초기화
+        this.selectedPlayerUUID = null;
+
+    }
+
+
+}

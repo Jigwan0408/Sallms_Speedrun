@@ -1,0 +1,51 @@
+# 위치 정보
+stages:
+  '0': # 스폰 지점
+    world: creative
+    x: -102.5
+    y: -58.0
+    z: 101.5
+    yaw: 180.0
+    pitch: 0.0
+  '1': # 블록 캐기
+    world: creative
+    x: -120.5
+    y: -60.0
+    z: 71.5
+    yaw: 180.0
+    pitch: 0.0
+  '2': # 감자 캐기
+    world: creative
+    x: -108.5
+    y: -60.0
+    z: 70.5
+    yaw: 0.0
+    pitch: 0.0
+  '3': # 점프맵
+    world: creative
+    x: -96.5
+    y: -60.0
+    z: 71.5
+    yaw: 180.0
+    pitch: 0.0
+  '4': # 건축
+    world: creative
+    x: -81.0
+    y: -60.0
+    z: 73.0
+    yaw: 180.0
+    pitch: 0.0
+  '5': # 물낙법
+    world: creative
+    x: -82.5
+    y: -49.0
+    z: 112.5
+    yaw: 180.0
+    pitch: 0.0
+  '6': # 블록 캐기
+    world: creative
+    x: -120.5
+    y: -60.0
+    z: 104.5
+    yaw: 0.0
+    pitch: 0.0
