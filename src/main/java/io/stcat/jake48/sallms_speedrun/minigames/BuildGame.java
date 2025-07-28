@@ -36,7 +36,6 @@ public class BuildGame implements MiniGame{
         }
         player.getInventory().setItemInOffHand(null);
 
-
         // 랜덤으로 건축물 표본 선택
         List<String> sampleNames = new ArrayList<>(plugin.getStructureManager().getStructureNames());
         if (sampleNames.isEmpty()) {

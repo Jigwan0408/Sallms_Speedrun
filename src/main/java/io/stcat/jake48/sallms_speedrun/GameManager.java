@@ -167,6 +167,12 @@ public class GameManager {
 
         // 4 스테이지 (건축)
         gameStages.put(4, new BuildGame(this.plugin));
+
+        // 5 스테이지 (물낙법)
+        gameStages.put(5, new DropGame(this.plugin));
+
+        // 6 스테이지 (사격)
+        gameStages.put(6, new ShotGame(this.plugin));
     }
 
     // 다음 단계로 넘어가는 메서드

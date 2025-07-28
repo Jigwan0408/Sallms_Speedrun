@@ -4,7 +4,10 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,5 +34,18 @@ public interface MiniGame {
     default void onBlockPlace(BlockPlaceEvent event, JavaPlugin plugin) {
         // 블록 설치 이벤트
     }
+    
+    default void onEntityDamage(EntityDamageEvent event, JavaPlugin plugin) {
+        // 엔티티 대미지 이벤트
+    }
+
+    default void onPlayerBucketEmpty(PlayerBucketEmptyEvent event, JavaPlugin plugin) {
+        // 양동이 상태 이벤트
+    }
+
+    default void onProjectileHit(ProjectileHitEvent event, JavaPlugin plugin) {
+        // 화살 피격 이벤트
+    }
+    
 
 }

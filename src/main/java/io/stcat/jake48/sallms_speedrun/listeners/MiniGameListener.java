@@ -1,13 +1,17 @@
 package io.stcat.jake48.sallms_speedrun.listeners;
 
 import io.stcat.jake48.sallms_speedrun.GameManager;
+import io.stcat.jake48.sallms_speedrun.GameState;
 import io.stcat.jake48.sallms_speedrun.minigames.MiniGame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -51,6 +55,30 @@ public class MiniGameListener implements Listener {
         MiniGame currentGame = GameManager.getInstance().getActiveMiniGame();
         if (currentGame != null) {
             currentGame.onBlockPlace(event, plugin);
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamage(EntityDamageEvent event) {
+        MiniGame currentGame = GameManager.getInstance().getActiveMiniGame();
+        if (currentGame != null) {
+            currentGame.onEntityDamage(event, plugin);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent event) {
+        MiniGame currentGame = GameManager.getInstance().getActiveMiniGame();
+        if (currentGame != null) {
+            currentGame.onPlayerBucketEmpty(event, plugin);
+        }
+    }
+
+    @EventHandler
+    public void onProjectileHit(ProjectileHitEvent event) {
+        MiniGame currentGame = GameManager.getInstance().getActiveMiniGame();
+        if (currentGame != null) {
+            currentGame.onProjectileHit(event, plugin);
         }
     }
 
