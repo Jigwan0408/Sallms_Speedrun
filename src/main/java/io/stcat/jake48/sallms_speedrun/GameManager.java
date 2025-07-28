@@ -1,9 +1,6 @@
 package io.stcat.jake48.sallms_speedrun;
 
-import io.stcat.jake48.sallms_speedrun.minigames.BlockBreak;
-import io.stcat.jake48.sallms_speedrun.minigames.FarmingGame;
-import io.stcat.jake48.sallms_speedrun.minigames.JumpGame;
-import io.stcat.jake48.sallms_speedrun.minigames.MiniGame;
+import io.stcat.jake48.sallms_speedrun.minigames.*;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -13,19 +10,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.security.Key;
 import java.util.*;
 
 public class GameManager {
 
     private static final GameManager instance = new GameManager();
-    private final Set<UUID> players = new HashSet<>(); // Player UUID 저장
-    private final Map<Integer, MiniGame> gameStages = new HashMap<>(); // 미니게임 단계 목록
+
     private JavaPlugin plugin; // 플러그인 객체 필드
-    private GameState gameState = GameState.WAITING;
-    private GameTimer gameTimer; // 타이머 객체 필드
-    private UUID selectedPlayerUUID; // 선택된 플레이어 UUID 객체 필드
+
+    private final Map<Integer, MiniGame> gameStages = new HashMap<>(); // 미니게임 단계 목록
     private MiniGame activeMiniGame; // 현재 활성화된 미니게임 객체 필드
     private int currentStage = 0; // 현재 단계를 추적하는 변수
+    
+    private GameState gameState = GameState.WAITING;
+    private GameTimer gameTimer; // 타이머 객체 필드
+
+    private final Set<UUID> players = new HashSet<>(); // Player UUID 저장
+    private UUID selectedPlayerUUID; // 선택된 플레이어 UUID 객체 필드
 
     // 싱글톤 패턴
     private GameManager() {
@@ -48,12 +50,16 @@ public class GameManager {
         return players;
     }
 
-    public void addPlayer(@NotNull Player player) {
-        players.add(player.getUniqueId());
+    public boolean addPlayer(@NotNull Player player) {
+        // Set.add()는 실제로 플레이어가 추가되었을 때만 true를 반환
+        // 이미 존재한다면 false를 반환
+        return players.add(player.getUniqueId());
     }
 
-    public void removePlayer(@NotNull Player player) {
-        players.remove(player.getUniqueId());
+    public boolean removePlayer(@NotNull Player player) {
+        // Set.remove()는 실제로 플레이어가 제거되었을 때만 true를 반환
+        // 목록에 없었다면 false를 반환
+        return players.remove(player.getUniqueId());
     }
 
     public UUID getSelectedPlayerUUID() {
@@ -158,6 +164,9 @@ public class GameManager {
 
          // 3 스테이지 (점프맵)
         gameStages.put(3, new JumpGame(this.plugin));
+
+        // 4 스테이지 (건축)
+        gameStages.put(4, new BuildGame(this.plugin));
     }
 
     // 다음 단계로 넘어가는 메서드
@@ -175,7 +184,7 @@ public class GameManager {
         }
 
         Sallms_Speedrun mainPlugin = (Sallms_Speedrun) plugin;
-        Location stageLoc = mainPlugin.getStageLocation(stageNum);
+        Location stageLoc = mainPlugin.getStageTeleportLocation(stageNum);
 
         if (stageLoc == null) {
             player.sendMessage(Component.text(stageNum + "단계의 위치를 찾을 수 없습니다! 관리자에게 문의하세요.", NamedTextColor.RED));

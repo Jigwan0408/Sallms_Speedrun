@@ -3,9 +3,9 @@ package io.stcat.jake48.sallms_speedrun.minigames;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public interface MiniGame {
@@ -20,12 +20,16 @@ public interface MiniGame {
         // 플레이어 상호작용 메서드
     }
 
-    default void onBlockBreak(BlockBreakEvent event, JavaPlugin plugin) {
-        // 1단계 미니게임 메서드 (블록 캐기)
+    default void onPlayerPickupItem(EntityPickupItemEvent event, JavaPlugin plugin) {
+        // 플레이어 아이템 획득 이벤트
     }
 
-    default void onPlayerPickupItem(EntityPickupItemEvent event, JavaPlugin plugin) {
-        // 2단계 미니게임 메서드 (농사 게임)
+    default void onBlockBreak(BlockBreakEvent event, JavaPlugin plugin) {
+        // 블록 파괴 이벤트
+    }
+
+    default void onBlockPlace(BlockPlaceEvent event, JavaPlugin plugin) {
+        // 블록 설치 이벤트
     }
 
 }

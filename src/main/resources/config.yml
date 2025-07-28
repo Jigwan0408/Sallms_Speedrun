@@ -29,12 +29,27 @@ stages:
     yaw: 180.0
     pitch: 0.0
   '4': # 건축
-    world: creative
-    x: -81.0
-    y: -60.0
-    z: 73.0
-    yaw: 180.0
-    pitch: 0.0
+    teleport-point:
+      world: creative
+      x: -81.0
+      y: -60.0
+      z: 73.0
+      yaw: 180.0
+      pitch: 0.0
+    sample-area-pos:
+      world: creative
+      x: -88.0
+      y: -60.0
+      z: 69.0
+      yaw: 180.0
+      pitch: 0.0
+    player-area-pos:
+      world: creative
+      x: -83.0
+      y: -60.0
+      z: 69.0
+      yaw: 180.0
+      pitch: 0.0
   '5': # 물낙법
     world: creative
     x: -82.5
