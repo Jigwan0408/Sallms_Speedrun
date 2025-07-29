@@ -3,6 +3,7 @@ version: '${version}'
 main: io.stcat.jake48.sallms_speedrun.Sallms_Speedrun
 api-version: '1.21'
 depend: [Multiverse-Core]
+softdepend: [WorldEdit ]
 commands:
   sallms:
     description: 게임을 관리하는 명령어

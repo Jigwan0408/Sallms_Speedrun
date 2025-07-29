@@ -3,6 +3,7 @@ package io.stcat.jake48.sallms_speedrun;
 import io.stcat.jake48.sallms_speedrun.commands.GameCommand;
 import io.stcat.jake48.sallms_speedrun.listeners.GameListener;
 import io.stcat.jake48.sallms_speedrun.listeners.MiniGameListener;
+import io.stcat.jake48.sallms_speedrun.listeners.WandListener;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,11 +24,16 @@ public final class Sallms_Speedrun extends JavaPlugin {
     // 건축물 위치 저장을 위한 Map 객체, Getter
     private final Map<UUID, Location> pos1Map = new HashMap<>();
     private final Map<UUID, Location> pos2Map = new HashMap<>();
-    private StructureManager structureManager;
+    private SchematicManager schematicManager;
+//    private StructureManager structureManager;
     private RankingManager rankingManager;
 
-    public StructureManager getStructureManager() {
-        return structureManager;
+//    public StructureManager getStructureManager() {
+//        return structureManager;
+//    }
+
+    public SchematicManager getSchematicManager() {
+        return schematicManager;
     }
 
     public RankingManager getRankingManager() {
@@ -46,7 +53,8 @@ public final class Sallms_Speedrun extends JavaPlugin {
         // GameManager에 메인 클래스 인스턴스(this)를 전달하여 초기화
         GameManager.getInstance().init(this);
 
-        this.structureManager = new StructureManager(this);
+//        this.structureManager = new StructureManager(this);
+        this.schematicManager = new SchematicManager(this);
         this.rankingManager = new RankingManager(this);
 
         // config.yml 파일이 없으면 기본 파일을 생성
@@ -64,6 +72,7 @@ public final class Sallms_Speedrun extends JavaPlugin {
         // 리스너 등록
         getServer().getPluginManager().registerEvents(new GameListener(this), this);
         getServer().getPluginManager().registerEvents(new MiniGameListener(this), this);
+        getServer().getPluginManager().registerEvents(new WandListener(this), this);
     }
 
     // 로그 메서드
@@ -150,7 +159,7 @@ public final class Sallms_Speedrun extends JavaPlugin {
      * @param path 확인할 경로 (예: "stage.4.teleport-point")
      * @return 성공 시 Location 객체, 실패 시 null
      */
-    private Location loadLocationFromPath(String path) {
+    private @Nullable Location loadLocationFromPath(String path) {
         // 경로 자체가 없으면 null 반환
         if (!getConfig().contains(path)) return null;
 

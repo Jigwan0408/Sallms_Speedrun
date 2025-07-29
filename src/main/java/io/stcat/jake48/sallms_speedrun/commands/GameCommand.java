@@ -278,10 +278,16 @@ public class GameCommand implements CommandExecutor, TabCompleter {
         }
         try {
             String structureName = args[1];
-            mainPlugin.getStructureManager().saveStructure(structureName, p1, p2);
-            player.sendMessage(Component.text("건축물이 성공적으로 저장되었습니다!", NamedTextColor.GREEN));
+
+            boolean success = mainPlugin.getSchematicManager().save(structureName, p1, p2);
+
+            if (success) {
+                player.sendMessage(Component.text("건축물이 성공적으로 저장되었습니다! 저장된 건축물: " + structureName, NamedTextColor.GREEN));
+            } else {
+                player.sendMessage(Component.text("건축물 저장 중 오류가 발생했습니다.", NamedTextColor.RED));
+            }
         } catch (Exception e) {
-            player.sendMessage(Component.text("건축물 저장 중 오류가 발생했습니다.", NamedTextColor.RED));
+            player.sendMessage(Component.text("스케메틱 저장 중 심각한 오류가 발생했습니다.", NamedTextColor.RED));
             e.printStackTrace();
         }
     }
