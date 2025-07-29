@@ -12,6 +12,8 @@ public class GameTimer extends BukkitRunnable {
     private final long startTime;
     private long elapsedTime;
 
+    private static final long TIME_LIMIT_SECONDS = 55;
+
     public GameTimer() {
         this.startTime = System.currentTimeMillis(); // 타이머가 생성된 시간 기록
     }
@@ -24,6 +26,16 @@ public class GameTimer extends BukkitRunnable {
         // 2. 초:밀리초 형식으로 변환
         long seconds = elapsedTime / 1000;
         long milliseconds = (elapsedTime % 1000) / 10; // 2자리로 표현하기 위해 10으로 나눔
+
+        if (seconds >= THE_LIMIT_SECONDS) {
+            // 시간 초과 메시지
+            Bukkit.broadcast(Component.text("시간 초과! 게임이 종료됩니다.", NamedTextColor.RED));
+
+            // GameManager를 통해 게임 중단
+            GameManager.getInstance().stopGame();
+            this.cancel();
+            return;
+        }
 
         // 3. 액션바에 표시할 텍스트 컴포넌트 생성
         Component timerComponent = Component.text()
@@ -41,11 +53,19 @@ public class GameTimer extends BukkitRunnable {
         }
     }
 
-    // 최종 기록을 "초.밀리초" 형태의 문자열로 반환
-    // @return 최종 기록 문자열 (예: "12.34초")
+    /** 최종 기록을 "초.밀리초" 형태의 문자열로 반환
+     * @return 최종 기록 문자열 (예: "12.34초")
+     */
     public String getFinalTime() {
         double finalSeconds = elapsedTime / 1000.0;
         return String.format("%02.2f초", finalSeconds);
     }
+
+    // completeGame에서 사용할 long 타입의 경과 시간 getter
+    public long getElapsedTime() {
+        return elapsedTime;
+    }
+
+
 
 }

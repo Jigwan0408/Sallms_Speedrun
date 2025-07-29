@@ -175,11 +175,44 @@ public class GameManager {
         gameStages.put(6, new ShotGame(this.plugin));
     }
 
+    private static final int FINAL_STAGE = 6;
+
     // 다음 단계로 넘어가는 메서드
     public void advanceToNextStage(Player player) {
-        // TODO: 마지막 단계인지 확인하는 로직
+        // 마지막 단계인지 확인
+        if (currentStage >= FINAL_STAGE) {
+            completeGame(player); // 마지막 단계면 게임 완료 처리
+        } else {
+            moveToStage(player, currentStage + 1);
+        }
 
         moveToStage(player, (this.currentStage + 1));
+    }
+
+    private void completeGame(Player winner) {
+        if (gameState != GameState.RUNNING) return;
+
+        if (gameTimer != null) {
+            gameTimer.cancel();
+        }
+
+        String finalTime = (gameTimer != null) ? gameTimer.getFinalTime() : "기록 없음";
+
+        // RankingManager에 기록 추가
+        Sallms_Speedrun mainPlugin = (Sallms_Speedrun) plugin;
+        mainPlugin.getRankingManager().addRecord(winner, gameTimer.getElapsedTime());
+
+        // 게임 완료 메시지
+        Component message = Component.text(winner.getName() + "님이 쌀멋 게임을 클리어했습니다! 기록: " + finalTime, NamedTextColor.GREEN);
+        Bukkit.broadcast(message);
+
+        // 게임 종료 호출
+        stopGame();
+
+        // 모든 플레이어의 랭킹 디스플레이 업데이트
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            mainPlugin.getRankingManager().updatePlayerDisplay(onlinePlayer);
+        }
     }
 
     // 특정 단계로 텔레포트 하는 메서드

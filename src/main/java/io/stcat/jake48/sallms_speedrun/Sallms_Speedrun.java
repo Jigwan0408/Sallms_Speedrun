@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -20,12 +19,19 @@ public final class Sallms_Speedrun extends JavaPlugin {
 
     // Location을 저장할 HashMap
     private final Map<Integer, Location> stageLocations = new HashMap<>();
-
-    private StructureManager structureManager;
-
     // 건축물 위치 저장을 위한 Map 객체, Getter
     private final Map<UUID, Location> pos1Map = new HashMap<>();
     private final Map<UUID, Location> pos2Map = new HashMap<>();
+    private StructureManager structureManager;
+    private RankingManager rankingManager;
+
+    public StructureManager getStructureManager() {
+        return structureManager;
+    }
+
+    public RankingManager getRankingManager() {
+        return rankingManager;
+    }
 
     public Map<UUID, Location> getPos1Map() {
         return pos1Map;
@@ -55,7 +61,7 @@ public final class Sallms_Speedrun extends JavaPlugin {
         getCommand("sallms").setExecutor(new GameCommand(this));
 
         // 리스너 등록
-        getServer().getPluginManager().registerEvents(new GameListener(), this);
+        getServer().getPluginManager().registerEvents(new GameListener(this), this);
         getServer().getPluginManager().registerEvents(new MiniGameListener(this), this);
     }
 
@@ -66,7 +72,7 @@ public final class Sallms_Speedrun extends JavaPlugin {
 
         // 서버 로그
         getLogger().info(pdf.getName() + " has been enabled! (version: " + version + ")");
-        
+
         // 인게임 로그
         Component message = Component.text(pdf.getName() + " has been enabled! (version: " + version + ")");
         Bukkit.broadcast(message);
@@ -109,9 +115,10 @@ public final class Sallms_Speedrun extends JavaPlugin {
 
     /**
      * 특정 단계의 하위 키(key)에 해당하는 위치를 가져오는 헬퍼 메서드
+     *
      * @param stageNum 단계 번호
-     * @param key 하위 키 이름
-     * (예: 4단계의 "sample-area-pos" 위치)
+     * @param key      하위 키 이름
+     *                 (예: 4단계의 "sample-area-pos" 위치)
      */
     public Location getStageLocation(int stageNum, String key) {
         String path = "stages." + stageNum + "." + key;
@@ -121,6 +128,7 @@ public final class Sallms_Speedrun extends JavaPlugin {
     /**
      * 특정 단계의 하위 키(key)에 해당하는 위치를 가져옴
      * (예: 4단계의 "sample-area-pos" 위치)
+     *
      * @param stageNumber 단계 번호
      * @return 성공 시 Location 객체, 실패 시 null
      */
@@ -137,6 +145,7 @@ public final class Sallms_Speedrun extends JavaPlugin {
 
     /**
      * config.yml의 특정 경로(path)에서 Location 객체를 불러옴
+     *
      * @param path 확인할 경로 (예: "stage.4.teleport-point")
      * @return 성공 시 Location 객체, 실패 시 null
      */
@@ -154,10 +163,6 @@ public final class Sallms_Speedrun extends JavaPlugin {
         float pitch = (float) getConfig().getDouble(path + ".pitch");
 
         return new Location(world, x, y, z, yaw, pitch);
-    }
-
-    public StructureManager getStructureManager() {
-        return structureManager;
     }
 
     @Override
