@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-public class BuildGame implements MiniGame{
+public class BuildGame implements MiniGame {
 
     private final Sallms_Speedrun plugin;
     private List<RelativeBlock> currentSample; // 현재 출제될 문제
@@ -36,22 +36,41 @@ public class BuildGame implements MiniGame{
         }
         player.getInventory().setItemInOffHand(null);
 
-        // 랜덤으로 건축물 표본 선택
+        String requestSampleName = GameManager.getInstance().consumeRequestedStructureName();
+        plugin.getLogger().info("[DEBUG] requestSampleName " + requestSampleName);
         List<String> sampleNames = new ArrayList<>(plugin.getStructureManager().getStructureNames());
         if (sampleNames.isEmpty()) {
             player.sendMessage(Component.text("오류: 저장된 건축물 표본이 없습니다!", NamedTextColor.RED));
             return false;
         }
-        Collections.shuffle(sampleNames);
 
-        String selectedName = sampleNames.get(0);
-        plugin.getLogger().info("[Stage 4] Selected sample for this round is: " + selectedName);
-        player.sendMessage((Component.text("이번에 지을 건축물 '", NamedTextColor.AQUA))
-                .append(Component.text(selectedName, NamedTextColor.GOLD))
-                .append(Component.text("' 입니다!")));
+        String finalSampleName;
+        if (requestSampleName != null && plugin.getStructureManager().getStructures(requestSampleName) != null) {
+            finalSampleName = requestSampleName;
+            player.sendMessage(Component.text("지정된 건축물 '" + finalSampleName + "'(으)로 시작합니다!", NamedTextColor.AQUA));
+        } else {
+            Collections.shuffle(sampleNames);
+            finalSampleName = sampleNames.get(0);
+            player.sendMessage((Component.text("이번에 지을 건축물 '", NamedTextColor.AQUA))
+                    .append(Component.text(finalSampleName, NamedTextColor.GOLD))
+                    .append(Component.text("' 입니다!")));
+        }
 
-        this.currentSample = plugin.getStructureManager().getStructures(sampleNames.get(0));
+//        // 랜덤으로 건축물 표본 선택
+//        List<String> sampleNames = new ArrayList<>(plugin.getStructureManager().getStructureNames());
+//        if (sampleNames.isEmpty()) {
+//            player.sendMessage(Component.text("오류: 저장된 건축물 표본이 없습니다!", NamedTextColor.RED));
+//            return false;
+//        }
+//        Collections.shuffle(sampleNames);
+//
+//        String selectedName = sampleNames.get(0);
+//        plugin.getLogger().info("[Stage 4] Selected sample for this round is: " + selectedName);
+//        player.sendMessage((Component.text("이번에 지을 건축물 '", NamedTextColor.AQUA))
+//                .append(Component.text(selectedName, NamedTextColor.GOLD))
+//                .append(Component.text("' 입니다!")));
 
+        this.currentSample = plugin.getStructureManager().getStructures(finalSampleName);
         this.sampleAreaPos = plugin.getStageLocation(4, "sample-area-pos");
         this.playerAreaPos = plugin.getStageLocation(4, "player-area-pos");
 

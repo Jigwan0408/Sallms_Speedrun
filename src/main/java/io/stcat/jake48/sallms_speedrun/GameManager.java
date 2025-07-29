@@ -29,6 +29,8 @@ public class GameManager {
     private final Set<UUID> players = new HashSet<>(); // Player UUID 저장
     private UUID selectedPlayerUUID; // 선택된 플레이어 UUID 객체 필드
 
+    private String requestedStructureName = null;
+
     // 싱글톤 패턴
     private GameManager() {
     }
@@ -248,6 +250,18 @@ public class GameManager {
         return true; // 성공
     }
 
+    public void setRequestedStructureName(String name) {
+        this.requestedStructureName = name;
+        plugin.getLogger().info("[DEBUG] requestedStructureName " + name);
+    }
+
+    public String consumeRequestedStructureName() {
+        String name = this.requestedStructureName;
+        plugin.getLogger().info("[DEBUG] consumeRequestedStructureName " + name);
+        this.requestedStructureName = null;
+        return name;
+    }
+
     // 게임 종료
     public void stopGame() {
         // 게임이 이미 대기 상태면 아무것도 하지 않음
@@ -266,6 +280,11 @@ public class GameManager {
 
         Sallms_Speedrun mainPlugin = (Sallms_Speedrun) this.plugin;
         Location spawnLoc = mainPlugin.getStageLocation(0); // 0번 스테이지(스폰)
+
+        // 타이머 종료z
+        if (gameTimer != null) {
+            gameTimer.cancel();
+        }
 
         // 스폰 지점(0단계)로 모든 플레이어 텔레포트
         if (spawnLoc != null) {
@@ -291,6 +310,7 @@ public class GameManager {
                 player.getInventory().setItemInOffHand(null);
             }
         }
+
 
         // 선택되었던 플레이어 정보 초기화
         this.selectedPlayerUUID = null;

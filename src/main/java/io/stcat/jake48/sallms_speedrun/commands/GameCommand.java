@@ -90,6 +90,9 @@ public class GameCommand implements CommandExecutor, TabCompleter {
         } else if  (args.length == 3) {
             // 인자가 두 개일 때
             exeStartTwoArg(player, args[1], args[2]);
+        } else if  (args.length == 4) {
+            // 인자가 3개일 때 (start <플레이어> <단계> <옵션>)
+            exeStartThreeArg(player, args[1], args[2], args[3]);
         } else {
             player.sendMessage(Component.text("사용법: /sallms start <플레이어> <단계>"));
         }
@@ -137,6 +140,34 @@ public class GameCommand implements CommandExecutor, TabCompleter {
                 sender.sendMessage(Component.text("존재하지 않는 스테이지 번호입니다.", NamedTextColor.RED));
                 return;
             }
+            gameManager.startGame(targetPlayer, stage);
+        } catch (NumberFormatException e) {
+            sender.sendMessage(Component.text("단계 번호는 숫자여야 합니다.", NamedTextColor.RED));
+        }
+    }
+
+    /** /sallms start <플레이어> <단계> <옵션> */
+    private void exeStartThreeArg(Player sender, String playerArg, String stageArg, String optionArg) {
+        GameManager gameManager = GameManager.getInstance();
+        Player targetPlayer = Bukkit.getPlayer(playerArg);
+        if (targetPlayer == null) {
+            sender.sendMessage(Component.text("플레이어 '" + playerArg + "'를 찾을 수 없습니다.", NamedTextColor.RED));
+            return;
+        }
+
+        try {
+            int stage = Integer.parseInt(stageArg);
+            if (stage != 4) { // 4단계 미니게임일 경우에만 옵션을 사용하도록 제한
+                sender.sendMessage(Component.text("옵션 지정은 4단계에서만 가능합니다.", NamedTextColor.RED));
+                return;
+            }
+            if (!gameManager.getGameStages().containsKey(stage)) {
+                sender.sendMessage(Component.text("존재하지 않는 스테이지 번호입니다.", NamedTextColor.RED));
+                return;
+            }
+
+            // GameManager에 건축물 이름을 임시 저장하도록 요청
+            gameManager.setRequestedStructureName(optionArg);
             gameManager.startGame(targetPlayer, stage);
         } catch (NumberFormatException e) {
             sender.sendMessage(Component.text("단계 번호는 숫자여야 합니다.", NamedTextColor.RED));
