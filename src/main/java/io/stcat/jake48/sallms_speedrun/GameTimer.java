@@ -27,7 +27,7 @@ public class GameTimer extends BukkitRunnable {
         long seconds = elapsedTime / 1000;
         long milliseconds = (elapsedTime % 1000) / 10; // 2자리로 표현하기 위해 10으로 나눔
 
-        if (seconds >= THE_LIMIT_SECONDS) {
+        if (seconds >= TIME_LIMIT_SECONDS) {
             // 시간 초과 메시지
             Bukkit.broadcast(Component.text("시간 초과! 게임이 종료됩니다.", NamedTextColor.RED));
 

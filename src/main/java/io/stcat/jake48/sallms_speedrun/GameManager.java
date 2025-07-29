@@ -185,8 +185,6 @@ public class GameManager {
         } else {
             moveToStage(player, currentStage + 1);
         }
-
-        moveToStage(player, (this.currentStage + 1));
     }
 
     private void completeGame(Player winner) {
@@ -266,17 +264,6 @@ public class GameManager {
             activeMiniGame = null;    // 다음 게임을 위해 미니게임 객체 초기화
         }
 
-        // 타이머 중지 및 최종 기록 계산
-        String finalTime = "기록 없음";
-        if (gameTimer != null) {
-            gameTimer.cancel();
-            finalTime = gameTimer.getFinalTime();
-        }
-
-        // 결과 메시지 및 스코어보드 표시
-        Component message = Component.text("게임이 종료되었습니다. 최종 기록: " + finalTime, NamedTextColor.WHITE);
-        Bukkit.broadcast(message);
-
         Sallms_Speedrun mainPlugin = (Sallms_Speedrun) this.plugin;
         Location spawnLoc = mainPlugin.getStageLocation(0); // 0번 스테이지(스폰)
 
@@ -285,7 +272,6 @@ public class GameManager {
             for (UUID playerUUID : players) {
                 Player player = Bukkit.getPlayer(playerUUID);
                 if (player != null) {
-                    ScoreboardManager.displayFinalScore(player, finalTime);
                     player.teleport(spawnLoc); // 스폰 위치로 텔레포트
                 }
             }
@@ -300,11 +286,12 @@ public class GameManager {
             if (player != null) {
                 for (int i = 0; i < 9; i++) {
                     player.getInventory().clear(i);
+                    mainPlugin.getRankingManager().updatePlayerDisplay(player);
                 }
                 player.getInventory().setItemInOffHand(null);
             }
         }
-        
+
         // 선택되었던 플레이어 정보 초기화
         this.selectedPlayerUUID = null;
 

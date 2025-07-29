@@ -47,6 +47,7 @@ public final class Sallms_Speedrun extends JavaPlugin {
         GameManager.getInstance().init(this);
 
         this.structureManager = new StructureManager(this);
+        this.rankingManager = new RankingManager(this);
 
         // config.yml 파일이 없으면 기본 파일을 생성
         saveDefaultConfig();
