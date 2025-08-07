@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.security.Key;
 import java.util.*;
 
 public class GameManager {
@@ -159,10 +158,10 @@ public class GameManager {
     // 미니게임 등록 메서드
     private void registerStages() {
         // 1 스테이지 (블록 캐기)
-        gameStages.put(1, new BlockBreak(this.plugin));
+        gameStages.put(1, new BreakGame(this.plugin));
 
         // 2 스테이지 (농사 게임)
-        gameStages.put(2, new FarmingGame(this.plugin));
+        gameStages.put(2, new FarmGame(this.plugin));
 
          // 3 스테이지 (점프맵)
         gameStages.put(3, new JumpGame(this.plugin));

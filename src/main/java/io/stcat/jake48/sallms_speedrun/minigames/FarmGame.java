@@ -4,17 +4,13 @@ import io.stcat.jake48.sallms_speedrun.GameManager;
 import io.stcat.jake48.sallms_speedrun.GameState;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -28,16 +24,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class FarmingGame implements MiniGame{
+public class FarmGame implements MiniGame{
 
-    private static final Logger log = LoggerFactory.getLogger(FarmingGame.class);
+    private static final Logger log = LoggerFactory.getLogger(FarmGame.class);
     private final JavaPlugin plugin;
+    
     // 실행 중인 모든 성장 타이머를 추적하기 위한 리스트
     private final List<BukkitTask> growthTasks = new ArrayList<>();
     // 아이템 정리를 위한 스테이지 중심 위치
-    private Location stageCenter;
+    private Location stageCenter; 
+ 
+    private int harvestedPotatoes = 0; // 수확한 감자 개수를 저장하는 카운터
+    private static final int POTATO_GOAL = 128; // 목표 감자 개수
 
-    public FarmingGame(JavaPlugin plugin){
+    public FarmGame(JavaPlugin plugin){
         this.plugin = plugin;
     }
 
@@ -51,6 +51,9 @@ public class FarmingGame implements MiniGame{
             player.getInventory().clear(i);
         }
         player.getInventory().setItemInOffHand(new ItemStack(Material.POTATO, 64));
+
+        // 수확한 감자 개수 초기화
+        this.harvestedPotatoes = 0;
 
         // 이전 게임의 타이머가 남아있을 경우 대비해 비워줌
         cleanupGrowthTasks();
@@ -159,6 +162,21 @@ public class FarmingGame implements MiniGame{
             player.sendMessage(Component.text("2단계 클리어!", NamedTextColor.GOLD));
 
             gameManager.advanceToNextStage(player);
+        }
+
+        // 주운 아이템이 감자인지 확인
+        if (event.getItem().getItemStack().getType() == Material.POTATO) {
+            // 수확 카운터를 주운 감자 개수만큼 증가
+            harvestedPotatoes += event.getItem().getItemStack().getAmount();
+
+            // 목표 달성 여부 확인
+            if (harvestedPotatoes >= POTATO_GOAL) {
+                player.sendMessage(Component.text("운이 없으시군요.. 그래도 2단계 클리어!", NamedTextColor.GOLD));
+                Component message = Component.text(player.getName() + "님이 독감자를 얻지 못하고 건실하게 클리어하셨습니다!", NamedTextColor.GOLD);
+                Bukkit.broadcast(message);
+
+                gameManager.advanceToNextStage(player);
+            }
         }
     }
 

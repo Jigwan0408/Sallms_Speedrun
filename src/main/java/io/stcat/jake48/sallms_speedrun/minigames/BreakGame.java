@@ -20,14 +20,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 
-public class BlockBreak implements MiniGame {
+public class BreakGame implements MiniGame {
 
     private final List<Location> blockLocations = new ArrayList<>();
     private final List<Location> bedrockLocations = new ArrayList<>();
 
     private final JavaPlugin plugin;
 
-    public BlockBreak(JavaPlugin plugin) {
+    public BreakGame(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 

@@ -22,7 +22,7 @@ public class JumpGame implements MiniGame {
 
     @Override
     public boolean setup(@NotNull Player player, Location startLocation) {
-        player.setGameMode(GameMode.SURVIVAL);
+        player.setGameMode(GameMode.ADVENTURE);
         for (int i = 0; i < 9; i++) {
             player.getInventory().clear(i);
         }
